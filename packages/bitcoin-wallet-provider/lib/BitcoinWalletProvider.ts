@@ -11,6 +11,8 @@ import {
   BigNumber,
   bitcoin as bT,
   ChainProvider,
+  CoinSelectionStrategy,
+  InputSupplementationMode,
   SendOptions,
   Transaction,
   WalletProvider,
