@@ -12,6 +12,17 @@ export enum InputSupplementationMode {
 }
 
 /**
+ * Coin selection strategies for UTXO selection
+ */
+export enum CoinSelectionStrategy {
+  COINSELECT = 'coinselect', // attempt to use the blackjack strategy first (no change output), else, try the accumulative strategy
+  ACCUMULATIVE = 'accumulative', // add inputs until we reach or surpass the target value (or deplete)
+  BLACKJACK = 'blackjack', // only add inputs if they don't bust the target value (aka, exact match)
+  SPLIT = 'split', // split utxos between each output, ignores outputs with .value defined
+  BREAK = 'break', // break utxos into the maximum number of 'output' possible
+}
+
+/**
  * DLC-specific input information for splice transactions
  */
 export interface DlcInputInfo {
