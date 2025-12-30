@@ -4,6 +4,7 @@ import {
   Address,
   Amount,
   CalculateEcSignatureRequest,
+  CoinSelectionStrategy,
   CreateRawTransactionRequest,
   CreateSignatureHashRequest,
   DdkDlcInputInfo,
@@ -324,7 +325,8 @@ export default class BitcoinDdkProvider extends Provider {
     amounts: bigint[],
     feeRatePerVb: bigint,
     fixedInputs: Input[] = [],
-    supplementation: InputSupplementationMode = InputSupplementationMode.Required,
+    inputSupplementationMode: InputSupplementationMode = InputSupplementationMode.Required,
+    coinSelectionStrategy: CoinSelectionStrategy = CoinSelectionStrategy.COINSELECT,
   ): Promise<Input[]> {
     if (amounts.length === 0) return [];
 
@@ -339,19 +341,26 @@ export default class BitcoinDdkProvider extends Provider {
     try {
       const inputsForAmount: InputsForDualAmountResponse = await this.getMethod(
         'getInputsForDualFunding',
-      )(amounts, feeRatePerVb, fixedUtxos);
+      )(
+        amounts,
+        feeRatePerVb,
+        fixedUtxos,
+        inputSupplementationMode,
+        coinSelectionStrategy,
+      );
 
       // Convert UTXO objects to Input class instances
       return inputsForAmount.inputs.map((utxo) => Input.fromUTXO(utxo));
     } catch (e) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error';
 
-      if (supplementation === InputSupplementationMode.Required) {
+      // For 'Required' mode, throw error
+      if (inputSupplementationMode === InputSupplementationMode.Required) {
         throw Error(
           `Not enough balance GetInputsForAmountWithMode. Error: ${errorMessage}`,
         );
       } else {
-        // Optional mode: fallback to provided inputs
+        // Selection failed: fallback to provided inputs
         return fixedInputs;
       }
     }

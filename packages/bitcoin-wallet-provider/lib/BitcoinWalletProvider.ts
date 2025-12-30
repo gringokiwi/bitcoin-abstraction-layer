@@ -778,6 +778,8 @@ export default <T extends Constructor<Provider>>(superclass: T) => {
       collaterals: number[],
       feePerByte?: number,
       fixedInputs: bT.Input[] = [],
+      inputSupplementationMode: InputSupplementationMode = InputSupplementationMode.Required,
+      coinSelectionStrategy: CoinSelectionStrategy = CoinSelectionStrategy.COINSELECT,
       numAddressPerCall = 100,
     ) {
       let addressIndex = 0;
