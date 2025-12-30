@@ -330,12 +330,7 @@ export default class BitcoinDdkProvider extends Provider {
   ): Promise<Input[]> {
     if (amounts.length === 0) return [];
 
-    // For "none" mode, use exactly the provided inputs
-    if (supplementation === InputSupplementationMode.None) {
-      return fixedInputs;
-    }
-
-    // For "required" and "optional" modes, attempt supplementation
+    // Convert to UTXOs
     const fixedUtxos = fixedInputs.map((input) => input.toUtxo());
 
     try {
